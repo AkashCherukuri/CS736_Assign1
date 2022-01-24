@@ -1,0 +1,32 @@
+A = importdata('data/assignmentImageDenoisingPhantom.mat');
+clean = A.imageNoiseless;
+y = A.imageNoisy;
+n = size(clean);
+m = n(1);
+n = n(2);
+
+x = y;
+
+
+diff = zeros(4,m,n);
+diff(1,:,:) = abs(x-circshift(x,[0 -1]));
+diff(2,:,:) = abs(x-circshift(x,[ 0 1]));
+diff(3,:,:) = abs(x-circshift(x,[ 1 0]));
+diff(4,:,:) = abs(x-circshift(x,[-1 0]));
+
+% pre-compute regularity terms 
+reg_d = zeros(m,n);
+for idx = 1:4
+    % Quadratic MRF Prior
+    reg_d = reg_d + 2*diff(idx,:,:);
+end
+
+step = 0.1;
+der = reg
+for i = 1:m
+    for j = 1:n
+        % gaussian noise
+        fid = 2*(x(i,j) - y(i,j));
+        der(i,j) += fi
+    end
+end
