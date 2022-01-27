@@ -29,10 +29,10 @@ x_old = y;
 
 while 1      
     diff = zeros(4,m,n);
-    diff(1,:,:) = abs(x_new-circshift(x_new,[0 -1]));
-    diff(2,:,:) = abs(x_new-circshift(x_new,[ 0 1]));
-    diff(3,:,:) = abs(x_new-circshift(x_new,[ 1 0]));
-    diff(4,:,:) = abs(x_new-circshift(x_new,[-1 0]));
+    diff(1,:,:) = x_new-circshift(x_new,[0 -1]);
+    diff(2,:,:) = x_new-circshift(x_new,[ 0 1]);
+    diff(3,:,:) = x_new-circshift(x_new,[ 1 0]);
+    diff(4,:,:) = x_new-circshift(x_new,[-1 0]);
 
     % pre-compute regularity terms 
     reg_d = zeros(m,n);
@@ -42,17 +42,17 @@ while 1
         if prior == 1
             % Quadratic MRF Prior
             reg_d = reg_d + squeeze(2*diff(idx,:,:));
-            thr = 0.01;
+            thr = 0.2e-2;
             step = 0.01;
         elseif prior == 2
             % Huber MRF Prior
-            reg_d = reg_d + squeeze(huber_der(squeeze(diff(idx,:,:)), 0.2));
-            thr = 0.8e-3;
+            reg_d = reg_d + squeeze(huber_der(squeeze(diff(idx,:,:)), 0.18));
+            thr = 1.2e-4;
             step = 0.001;
         elseif prior == 3
             % The custom function's prior
-            reg_d = reg_d + squeeze(disc_adap_der(squeeze(diff(idx,:,:)), 0.01));
-            thr = 2.2e-4;
+            reg_d = reg_d + squeeze(disc_adap_der(squeeze(diff(idx,:,:)), 0.1));
+            thr = 1e-4;
             step = 0.001;
         end
     end
