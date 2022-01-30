@@ -11,21 +11,21 @@ clear;
 % 1 - Quadratic Prior
 % 2 - Huber Prior
 % 3 - The other prior
-prior = 2;
+prior = 1;
 
 % 1 - Gaussian Noise
 % 2 - Rician Noise
-noise = 2;
+noise = 1;
 
 % Weighting term between noise and likelihood
-alpha = 1-0.00001;
+alpha = 0.00001;
 
 A = importdata('../data/assignmentImageDenoisingPhantom.mat');
 clean = A.imageNoiseless;
 y = A.imageNoisy;
 n = size(clean);
 
-imshow(y*256,jet);
+%imshow(y*256,jet);
 m = n(1);
 n = n(2);
 
@@ -76,16 +76,16 @@ while 1
     itc = itc + 1;
     if noise == 1
         % Using gaussian noise
-        fid = 2*(x_new-y)*(1-alpha);        
+        fid = 2*(x_new-y)*(alpha);        
     elseif noise == 2
         % Using Rician Noise
-        arg = (x_new.*y)*(1-alpha);
-        fid = (1-alpha)*(x_new - (besseli(1,arg)./besseli(0,arg)).*(y));
+        arg = (x_new.*y)*(alpha);
+        fid = (alpha)*(x_new - (besseli(1,arg)./besseli(0,arg)).*(y));
         
     end
         
     
-    der = fid + reg_d*(alpha);
+    der = fid + reg_d*(1-alpha);
     x_old = x_new;
     x_new = x_new - (step*der + beta*prev_delta);
     prev_delta = (step*der + beta*prev_delta);
@@ -106,12 +106,3 @@ subplot(1,3,3), imshow(clean);
 title('clean image', 'FontSize', 15);
 
 
-iterations= linspace(1,itc,itc);
-figure;
-plot(iterations,objective_func_value);
-xlabel('iteration');
-ylabel('objective function value');
-title('objective function value vs iteration');
-
-post_diff = rrmse(x_new, clean);
-init_diff = rrmse(y, clean);
