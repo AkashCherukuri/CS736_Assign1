@@ -1,3 +1,4 @@
+clear;
 %{
    TO BE DONE!!!
    1.  ~~ Rician Noise ~~ 
@@ -64,6 +65,7 @@ while 0
             reg_d = reg_d + squeeze(disc_adap_der(squeeze(diff(idx,:,:)), 0.1));
             thr = 1e-4;
             step = 0.001;
+            beta = 0.5;
         end
     end
     
