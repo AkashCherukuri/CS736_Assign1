@@ -11,14 +11,14 @@ clear;
 % 1 - Quadratic Prior
 % 2 - Huber Prior
 % 3 - The other prior
-prior = 1;
+prior = 3;
 
 % 1 - Gaussian Noise
 % 2 - Rician Noise
 noise = 1;
 
 % Weighting term between noise and likelihood
-alpha = (1-4e-1);
+alpha = 3e-6;
 
 A = importdata('../data/assignmentImageDenoisingPhantom.mat');
 clean = A.imageNoiseless;
@@ -58,16 +58,16 @@ while 1
             % Huber MRF Prior
             gamma = 0.002;
             reg_d = reg_d + squeeze(huber_der(squeeze(diff(idx,:,:)), gamma));
-            thr = 1e-5;
-            step = 0.001;
+            thr = 2e-5;
+            step = 0.003;
             beta = 0.5;     % Gradient Descent with momentum
         elseif prior == 3
             % The custom function's prior
             gamma = 0.004;
             reg_d = reg_d + squeeze(disc_adap_der(squeeze(diff(idx,:,:)), gamma));
-            thr = 2e-5;
-            step = 0.001;
-            beta = 0.5;
+            thr = 2.5e-5;
+            step = 0.006;
+            beta = 0.4;
         end
     end
     
@@ -89,8 +89,8 @@ while 1
     x_new = x_new - (step*der + beta*prev_delta);
     prev_delta = (step*der + beta*prev_delta);
     
-    objective_func_value(itc)=objective_function(x_new,y,diff,alpha,gamma,prior,noise);
-    rrmse(x_new, x_old);
+    objective_func_value(itc)=objective_function(x_new,y,diff,1-alpha,gamma,prior,noise);
+    rrmse(x_new, x_old)
     if rrmse(x_new, x_old) < thr
         break
     end
@@ -99,6 +99,13 @@ end
 
 figure;
  imshow(x_new*256,jet);
+
+iterations= linspace(1,itc,itc);
+figure;
+plot(iterations,objective_func_value);
+xlabel('iteration');
+ylabel('objective function value');
+title('objective function value vs iteration for Huber MRF Prior');
 
 format long
 rrmse(x_new, clean)
