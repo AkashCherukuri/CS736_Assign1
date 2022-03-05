@@ -6,7 +6,7 @@ mask=A.imageMask;
 y=img.*mask;
 k=3;
 b=ones(size(y)).*mask;
-n_iters=5;
+n_iters=20;
 q=1.7;
 w=fspecial('gaussian',5);
 u=zeros(256,256,k);
@@ -16,12 +16,11 @@ c(idx)=[];
 [n,m]=size(y);
 for i=1:n
     for j=1:m
-        if(mask(i,j))>0
-            [~,idx]=min(abs(c-y(i,j)));
-            u(i,j,idx)=1;
-        end
+        [~,idx]=min(abs(c-y(i,j)));
+        u(i,j,idx)=1;
     end
 end
+u=u.*mask;
 figure;
 subplot(1,3,1), imshow(u(:,:,1));
 title('class 1', 'FontSize', 15);
