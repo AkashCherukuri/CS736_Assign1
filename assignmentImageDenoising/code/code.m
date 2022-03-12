@@ -11,18 +11,21 @@ clear;
 % 1 - Quadratic Prior
 % 2 - Huber Prior
 % 3 - The other prior
-prior = 3;
+prior = 1;
 
 % 1 - Gaussian Noise
 % 2 - Rician Noise
-noise = 1;
+noise = 2;
 
 % Weighting term between noise and likelihood
-alpha = 3e-6;
+alpha = 0.001*1.2;
 
-A = importdata('../data/assignmentImageDenoisingPhantom.mat');
-clean = A.imageNoiseless;
-y = A.imageNoisy;
+%A = importdata('../data/assignmentImageDenoisingPhantom.mat');
+A = importdata('../data/brainMRIslice.mat');
+%clean = A.imageNoiseless;
+%y = A.imageNoisy;
+clean = A.brainMRIsliceOrig;
+y = A.brainMRIsliceNoisy;
 n = size(clean);
 
 m = n(1);
@@ -34,6 +37,7 @@ prev_delta = 0;
 
 itc = 0;
 objective_func_value = [];
+iter_num = 0;
 
 while 1     
     diff = zeros(4,m,n);
@@ -51,15 +55,16 @@ while 1
         if prior == 1
             % Quadratic MRF Prior
             reg_d = reg_d + squeeze(2*diff(idx,:,:));
-            thr = 1e-3;
+            thr = 2.27e-3;
             step = 0.001;
-            beta = 0.7;
+            beta = 0.1;
         elseif prior == 2
             % Huber MRF Prior
-            gamma = 0.002;
+            gamma = 0.002*0.8;
             reg_d = reg_d + squeeze(huber_der(squeeze(diff(idx,:,:)), gamma));
-            thr = 2e-5;
-            step = 0.003;
+            thr =1e-4;
+            % 1.2: 0.113747482273460
+            step = 0.009;
             beta = 0.5;     % Gradient Descent with momentum
         elseif prior == 3
             % The custom function's prior
@@ -90,22 +95,23 @@ while 1
     prev_delta = (step*der + beta*prev_delta);
     
     objective_func_value(itc)=objective_function(x_new,y,diff,1-alpha,gamma,prior,noise);
-    rrmse(x_new, x_old)
-    if rrmse(x_new, x_old) < thr
+    iter_num =iter_num + 1 ;
+    rrmse(x_new, x_old);
+    if rrmse(x_new, x_old) < thr && iter_num > 50
         break
     end
     
 end
 
 figure;
- imshow(x_new*256,jet);
+ imshow(x_new*255, jet);
 
 iterations= linspace(1,itc,itc);
 figure;
 plot(iterations,objective_func_value);
 xlabel('iteration');
 ylabel('objective function value');
-title('objective function value vs iteration for Huber MRF Prior');
+title('objective function value vs iteration for Quadratic Prior');
 
-format long
-rrmse(x_new, clean)
+rrmse(clean, x_new)
+rrmse(clean, y)
