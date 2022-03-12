@@ -13,8 +13,8 @@ b=ones(size(y)).*mask;  % Initialize the bias field inside the brain
 k=3;                    % Given that the number of classes = 3
 
 n_iters=40;             % Specify the number of iterations
-q=1.7;                  % parameter to control the fuzziness
-std = 0.5;                % Std dev of the gaussian controlling weights
+q=1.5;                  % parameter to control the fuzziness
+std = 10;                % Std dev of the gaussian controlling weights
 
 w=fspecial('gaussian',5);   % Create a predefined 2D filter
 
