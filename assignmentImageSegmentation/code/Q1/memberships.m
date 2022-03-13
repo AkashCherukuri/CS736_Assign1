@@ -12,8 +12,6 @@ end
 h=(h./d).^(1/(q-1));
 h(isnan(h))=0;
 h_sum=sum(h,3);
-for k=1:K
-    u(:,:,k)=h(:,:,k)./h_sum;
-end
+u=h./h_sum;
 u(isnan(u))=0;
 end

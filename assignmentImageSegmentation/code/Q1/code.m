@@ -12,9 +12,8 @@ y=img.*mask;            % Get the image inside the brain
 b=ones(size(y)).*mask;  % Initialize the bias field inside the brain
 k=3;                    % Given that the number of classes = 3
 
-n_iters=19;             % Specify the number of iterations
+eps=0.005;             % Threshold for obj_function value
 q=1.6;                  % parameter to control the fuzziness
-std = 10;                % Std dev of the gaussian controlling weights
 
 w=fspecial('gaussian',20);   % Create a predefined 2D filter
 
@@ -43,21 +42,26 @@ subplot(1,3,3), imshow(u(:,:,3));
 title('class 3', 'FontSize', 15);
 sgtitle('Initial estimate for membership values','FontSize', 15);
 c
-obj_val = zeros(n_iters,1);
-
+obj_val = [];
+i=0;
 % Being iterating over the image
-for i=1:n_iters
+while 1
+    i=i+1;
     u=memberships(y,c,b,w,q).*mask; % Find optimal value of memberships at every iteration (b)
     b=bias(w,y,u,c,q).*mask;        % Find optimal value of bias        at every iteration (c)
     c=class_means(u,b,w,q,y);       % Find optimal value of class means at every iteration (a)
     % Append the objective function value after the i'th iteration
-    obj_val(i) = ObjFunc(u,q,w,y,c,b);  
+    obj_val(i) = ObjFunc(u,q,w,y,c,b);
+    if(i>1 & abs(obj_val(i)-obj_val(i-1))<eps)
+        break;
+    end
 end
 
 bias_removed_image=zeros(256,256);
 for i=1:k
     bias_removed_image=bias_removed_image+u(:,:,i).*c(i);
 end
+
 residual_image=y-bias_removed_image;
 
 figure;
@@ -67,6 +71,7 @@ title('Neibourhood mask','FontSize', 15);
 
 obj_val
 % Plot the objective function with number of iterations
+[~,n_iters]=size(obj_val)
 figure;
 plot(1:n_iters, obj_val);
 sgtitle('Objective Function Plot', 'FontSize', 15);
