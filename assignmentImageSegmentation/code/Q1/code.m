@@ -61,7 +61,8 @@ end
 residual_image=y-bias_removed_image;
 
 figure;
-imshow(w);
+image(w,'CDataMapping','scaled');
+colorbar;
 title('Neibourhood mask','FontSize', 15);
 
 obj_val
