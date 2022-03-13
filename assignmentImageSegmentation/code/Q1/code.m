@@ -68,3 +68,5 @@ sgtitle('Modified FCM','FontSize', 15);
 figure;
 plot(1:n_iters, obj_val);
 sgtitle('Objective Function Plot', 'FontSize', 15);
+
+imshow(b);
