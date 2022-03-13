@@ -12,8 +12,8 @@ y = single(imgData.*imgMask);
 
 % Given that the number of classes is 3
 K = 3;
-n_iters = 2;
-beta = 10;
+n_iters = 100;
+beta = 50;
 
 %% Step1: Initialize Parameters \theta
 %  KMeans algorithm is used to initialize the parameters for the gaussian
@@ -24,6 +24,7 @@ beta = 10;
 [~,idx] = min(mu);
 mu(idx) = [];
 
+mu
 % Kmeans always gives the black bg as class 1
 class2 = [];
 class3 = [];
@@ -47,6 +48,7 @@ sigm(1) = std(class2);
 sigm(2) = std(class3);
 sigm(3) = std(class4);
 
+sigm
 u = zeros(n,n,K);
 for i=1:n
     for j=1:n
@@ -57,44 +59,68 @@ end
 u = u.*imgMask;
 
 figure;
-subplot(1,3,1); imshow(u(:,:,1));
-subplot(1,3,2); imshow(u(:,:,2));
-subplot(1,3,3); imshow(u(:,:,3));
-sgtitle('Initalized memberships','FontSize', 15);
+subplot(1,1,1); imshow(y);
+sgtitle('Given image','FontSize', 15);
+
+
+figure;
+X_map = getLabelImg(u);
+for i=1:n
+    for j=1:n
+        if(X_map(i,j)==-1)
+            X_map(i,j)=0;
+        end
+    end
+end
+RGB = label2rgb(X_map, @jet, 'k');
+subplot(1,1,1); imshow(RGB);
+sgtitle('Initial Label image','FontSize', 15);
+
+before_ICM = zeros(n_iters,1);
+after_ICM  = zeros(n_iters,1);
 
 for i=1:n_iters
     %% E Step: Compute the MAP Estimate
     %  ICM has been used for this, as requested in the problem statement
-
-    % This is mostly wrong, but is just acting as a placeholder
-    % Put X_map as the max membership
-    X_map = zeros(n,n);
-    for xi=1:n
-        for yi=1:n
-            if(u(xi,yi,1)+u(xi,yi,2)+u(xi,yi,3)==0)
-                X_map(xi,yi) = -1;
-            else
-                [~,max_idx] = max(u(xi,yi));
-                X_map(xi,yi) = max_idx;
-            end
-        end
-    end
-    % Compute the potential function
-    pot = potential(X_map, beta);
+    
+    % Get the MAP estimate
+    t_max = getLabelImg(u);
+    before_ICM(i) = getLogPosterior(t_max,y,beta,mu,sigm);
+    X_map = performICM(t_max,y,beta,mu,sigm);
+    after_ICM(i)  = getLogPosterior(X_map,y,beta,mu,sigm);
 
     % Compute the memberships
     u = zeros(n,n,3);
     for xi=1:n
         for yi=1:n
-            den = 0;
-            for k=1:K
-                u(xi,yi,k) = (normpdf(y(xi,yi),mu(k),sigm(k)) * pot(xi,yi,k));
-                den = den + u(xi,yi,k);
+            if(t_max(xi,yi) ~= -1)
+                den = zeros(3,1);
+                for k=1:3
+                    val = 0;
+                    if(t_max(xi,yi+1)~=k && t_max(xi,yi+1)~=-1)
+                        val = val + beta;
+                    end
+                    if(t_max(xi,yi-1)~=k && t_max(xi,yi-1)~=-1)
+                        val = val + beta;
+                    end
+                    if(t_max(xi+1,yi)~=k && t_max(xi+1,yi)~=-1)
+                        val = val + beta;
+                    end
+                    if(t_max(xi-1,yi)~=k && t_max(xi-1,yi)~=-1)
+                        val = val + beta;
+                    end
+                    pot = exp(-val);
+                    den(k) = pot * normpdf(y(xi,yi),mu(k), sigm(k));
+                end
+                den(isnan(den))=0;
+                for k=1:3
+                    u(xi,yi,k) = den(k)/sum(den,"all");
+                end
             end
-            u(xi,yi,:) = u(xi, yi,:)/den;
         end
     end
     u(isnan(u))=0;
+
     %% M Step: Update the parameters
     %  Use the computed MAP estimate in the E Step to update both the means and
     %  the variances of the underlying GMM
@@ -107,4 +133,24 @@ figure;
 subplot(1,3,1); imshow(u(:,:,1));
 subplot(1,3,2); imshow(u(:,:,2));
 subplot(1,3,3); imshow(u(:,:,3));
-sgtitle('EM Optimization','FontSize', 15);
+sgtitle('Optimal Class Image Estimates with \beta = 0','FontSize', 15);
+
+figure;
+for i=1:n
+    for j=1:n
+        if(X_map(i,j)==-1)
+            X_map(i,j)=0;
+        end
+    end
+end
+RGB = label2rgb(X_map, @jet, 'k');
+subplot(1,1,1); imshow(RGB);
+sgtitle('Optimal Label Image with \beta=0','FontSize', 15);
+
+figure;
+xgraph = 1:n_iters;
+plot(xgraph, before_ICM);
+hold on;
+plot(xgraph, after_ICM);
+legend({'Before ICM','After ICM'});
+title('Plot showing difference in Log-Posterior before and after ICM');

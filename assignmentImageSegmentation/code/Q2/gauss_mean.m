@@ -1,7 +1,7 @@
 % Code to find optimal values of class means
 function [mu] = gauss_mean(m,y)
     [~,~,K] = size(m);
-    mu = zeros(K);
+    mu = zeros(K,1);
     for k=1:K
         num = sum(m(:,:,k).*y(:,:));
         den = sum(m(:,:,k));
