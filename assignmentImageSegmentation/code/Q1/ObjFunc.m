@@ -7,7 +7,7 @@ function [val] = ObjFunc(u,q,w,y,c,b)
     d=zeros(n,m,K);
     uq=u.^q;
     for k=1:K
-        d(:,:,k)=abs((y.^2)-(2*c(k).*y.*p)+((c(k)^2).*t));
+        d(:,:,k)=abs((y.^2)-(2*c(k).*y.*p)+((c(k)^2).*t))
     end
     val = sum(uq.*d,"all");
 end
