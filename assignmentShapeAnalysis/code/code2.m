@@ -2,7 +2,6 @@ function [shape_mean] = code1(nps,np,points)
 centroid=sum(points,2)./np;
 points=points-centroid;
 shape_mean=sum(points,3)./np;
-cent=sum(shape_mean,2)./np
 threshold=6e-8;
 while 1
     for i=1:nps
