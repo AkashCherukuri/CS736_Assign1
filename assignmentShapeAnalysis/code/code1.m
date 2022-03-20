@@ -9,6 +9,8 @@ while 1
         if(det(R)==-1)
             if(R(1,1)>=R(2,2))
                 R=V*[1,0;0,-1]*U.';
+            else
+                R=V*[-1,0;0,1]*U.'; 
             end
         end
         preshape_points(:,:,i)=R*preshape_points(:,:,i);
