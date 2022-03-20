@@ -24,4 +24,8 @@ while 1
     end
     shape_mean=new_shape_mean;
 end
+plotter(nps,points);
+hold on;
+plot(shape_mean(1,:),shape_mean(2,:) ,'-*','LineWidth',2); 
+sgtitle('aligned poinset and shape mean');
 end
