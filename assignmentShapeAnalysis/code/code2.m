@@ -1,4 +1,4 @@
-function [shape_mean] = code1(nps,np,points)
+function [points,shape_mean] = code1(nps,np,points)
 centroid=sum(points,2)./np;
 points=points-centroid;
 shape_mean=sum(points,3)./nps;

@@ -1,4 +1,4 @@
-function [shape_mean] = code1(nps,np,preshape_points)
+function [preshape_points,shape_mean] = code1(nps,np,preshape_points)
 shape_mean=sum(preshape_points,3)./nps;
 threshold=5e-8;
 while 1
