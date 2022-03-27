@@ -11,7 +11,7 @@ D=D(idx,idx);
 V = V(:, idx);
 ev=diag(D);
 figure;
-scatter([1 2 3],ev(1:3));
+scatter([1 2 3],ev(2*np-3+1:2*np-1+1));
 xlabel('mode of variation');
 ylabel('eigenvalue');
 sgtitle('Variances');
