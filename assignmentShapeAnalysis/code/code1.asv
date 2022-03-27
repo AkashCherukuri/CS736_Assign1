@@ -13,6 +13,7 @@ while 1
                 R=V*[-1,0;0,1]*U.'; 
             end
         end
+        f=size(R)
         preshape_points(:,:,i)=R*preshape_points(:,:,i);
     end
     new_shape_mean=sum(preshape_points,3)./nps;
