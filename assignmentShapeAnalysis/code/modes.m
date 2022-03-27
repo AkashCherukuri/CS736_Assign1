@@ -7,11 +7,12 @@ end
 S=(dX*dX.')./nps;
 [V,D] = eig(S);
 [~, idx] = sort(diag(D));
+D=D(idx,idx);
 V = V(:, idx);
 for k=1:3
     i=2*np-k+1;
-    pma=shape_mean-3*sqrt(D(i,i))*reshape(V(:,i),2,np);
-    pmb=shape_mean+3*sqrt(D(i,i))*reshape(V(:,i),2,np); 
+    pma=shape_mean-2*sqrt(D(i,i))*reshape(V(:,i),2,np);
+    pmb=shape_mean+2*sqrt(D(i,i))*reshape(V(:,i),2,np); 
     figure;
     plot(shape_mean(1,:),shape_mean(2,:) ,'-*r'); 
     hold on;

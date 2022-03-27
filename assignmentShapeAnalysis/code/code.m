@@ -1,3 +1,4 @@
+close all;
 clear;
 clc;
 % Import the data...
@@ -7,7 +8,7 @@ np=A.numOfPoints;
 points=A.pointSets;
 plotter(nps,points);
 sgtitle('initial poinset');
-shape_mean= code11(nps,np,points);
-modes(nps,np,points,shape_mean);
-shape_mean= code22(nps,np,points); 
-modes(nps,np,points,shape_mean);
+shape_mean1= code11(nps,np,points);
+modes(nps,np,points,shape_mean1);
+shape_mean2= code22(nps,np,points); 
+modes(nps,np,points,shape_mean2);

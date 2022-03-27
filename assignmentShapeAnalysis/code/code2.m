@@ -1,8 +1,8 @@
 function [shape_mean] = code1(nps,np,points)
 centroid=sum(points,2)./np;
 points=points-centroid;
-shape_mean=sum(points,3)./np;
-threshold=6e-8;
+shape_mean=sum(points,3)./nps;
+threshold=5e-8;
 while 1
     for i=1:nps
         A=points(:,:,i)*shape_mean.';
@@ -15,9 +15,10 @@ while 1
         end
         points(:,:,i)=R*points(:,:,i);
     end
-    new_shape_mean=sum(points,3)./np;
-    norm=sqrt(sum(new_shape_mean.^2,'all'));
-    new_shape_mean=new_shape_mean./norm; 
+    norm_mean=sqrt(sum(shape_mean.^2,'all'));
+    norm=sqrt(sum(points.^2,[1 2]));
+    points=points./norm.*norm_mean;
+    new_shape_mean=sum(points,3)./nps;
     diff=sqrt(sum((new_shape_mean-shape_mean).^2,'all'));
     if(diff<threshold)
         break;

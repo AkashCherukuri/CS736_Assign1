@@ -1,6 +1,6 @@
 function [shape_mean] = code1(nps,np,preshape_points)
-shape_mean=sum(preshape_points,3)./np;
-threshold=6e-8;
+shape_mean=sum(preshape_points,3)./nps;
+threshold=5e-8;
 while 1
     for i=1:nps
         A=preshape_points(:,:,i)*shape_mean.';
@@ -15,7 +15,7 @@ while 1
         end
         preshape_points(:,:,i)=R*preshape_points(:,:,i);
     end
-    new_shape_mean=sum(preshape_points,3)./np;
+    new_shape_mean=sum(preshape_points,3)./nps;
     norm=sqrt(sum(new_shape_mean.^2,'all'));
     new_shape_mean=new_shape_mean./norm; 
     diff=sqrt(sum((new_shape_mean-shape_mean).^2,'all'));
