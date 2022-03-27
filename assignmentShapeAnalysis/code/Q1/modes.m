@@ -9,6 +9,12 @@ S=(dX*dX.')./nps;
 [~, idx] = sort(diag(D));
 D=D(idx,idx);
 V = V(:, idx);
+ev=diag(D);
+figure;
+scatter([1 2 3],ev(2*np-3+1:2*np-1+1));
+xlabel('mode of variation');
+ylabel('eigenvalue');
+sgtitle('Variances');
 for k=1:3
     i=2*np-k+1;
     pma=shape_mean-3*sqrt(D(i,i))*reshape(V(:,i),2,np);
