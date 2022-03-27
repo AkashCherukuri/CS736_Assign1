@@ -2,7 +2,7 @@ close all;
 clear;
 clc;
 % Import the data...
-points = importdata('../data/hands2D.mat');
+points = importdata('../../data/hands2D.mat');
 [~,np,nps]=size(points);
 plotter(nps,points);
 sgtitle('initial poinset');

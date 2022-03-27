@@ -1,11 +1,11 @@
 function [points,shape_mean] = code1(nps,np,points)
 shape_mean=sum(points,3)./nps;
-threshold=5e-8;
+threshold=5e-5;
 while 1
     X1=sum(shape_mean(1,:))/np;
     Y1=sum(shape_mean(2,:))/np;
     W=1;
-    for i=1:2
+    for i=1:nps
         X2=sum(points(1,:,i))/np;
         Y2=sum(points(2,:,i))/np;
         Z=sum(points(:,:,i).^2,'all')/np;
@@ -19,14 +19,12 @@ while 1
             Z 0 X2 Y2;
             0 Z -Y2 X2];
         B=[X1; Y1; C1; C2]; 
-        L = linsolve(A,B)
-        [a,
+        L = linsolve(A,B);
+        a=L(1);
+        b=L(2);
         M=[a -b; b a];
-        points(:,:,i)=M*points(:,:,i)+[tx;ty]
+        points(:,:,i)=M*points(:,:,i)+L(3:4);
     end
-    norm_mean=sqrt(sum(shape_mean.^2,'all'));
-    norm=sqrt(sum(points.^2,[1 2]));
-    points=points./norm.*norm_mean;
     new_shape_mean=sum(points,3)./nps;
     diff=sqrt(sum((new_shape_mean-shape_mean).^2,'all'));
     if(diff<threshold)
